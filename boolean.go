@@ -32,12 +32,22 @@ func (b Boolean) Json() (map[string]interface{}, error) {
 	return nil, TypeValueErr
 }
 
+func (b Boolean) StringMap() (map[string]string, error) {
+	return nil, TypeValueErr
+}
+
 func (b Boolean) File() (*File, error) {
 	return nil, TypeValueErr
 }
 
-func (b *Boolean) Parse(value string) (err error) {
-	switch value {
+func (b *Boolean) Parse(value interface{}) (err error) {
+
+	valS, ok := value.(string)
+	if !ok {
+		return WrongValueErr
+	}
+
+	switch valS {
 	case "true":
 		b.Value = true
 	case "false":

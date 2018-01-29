@@ -2,15 +2,12 @@ package confighub
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type Properties struct {
-	cfg      *ConfigHubClient
+	cfg     *ConfigHubClient
 	entries map[string]*Property
 }
-
-
 
 type Property struct {
 	cfg      *ConfigHubClient
@@ -35,9 +32,10 @@ func (p *Property) UnmarshalJSON(data []byte) (err error) {
 		return
 	}
 
-	valS := valI.(string)
-
 	if t, ok := m["type"]; !ok {
+
+		valS := valI.(string)
+
 		p.value = &String{
 			Value: valS,
 		}
@@ -56,17 +54,18 @@ func (p *Property) UnmarshalJSON(data []byte) (err error) {
 			p.value = &Float{}
 		case "JSON":
 			p.value = &Json{}
+		case "Map":
+			p.value = &StringMap{}
 		case "FileRef":
 			p.value = &FileRef{
 				files: p.cfg.Files,
 			}
 		default:
-			fmt.Println(t)
 			err = WrongValueErr
 			return
 		}
 
-		err = p.value.Parse(valS)
+		err = p.value.Parse(valI)
 	}
 
 	return nil

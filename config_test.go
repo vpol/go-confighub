@@ -17,24 +17,32 @@ func TestClientGet(t *testing.T) {
         	"test": {
             	"content": "adsfdfasadsfadfsdaf",
             	"content-type": "text/plain"
+        	},
+			"test1": {
+            	"content": "11111111",
+            	"content-type": "text/html"
         	}
     	},
     	"properties": {
+			 "mapKey": {
+            	"type": "Map",
+            	"val": {
+					"key1": "value1",
+					"key2": "value2"
+            	}
+        	},
 			"jsonKey": {
 				"type": "JSON",
 				"val": "{\"test\": 123}"
 			},
-			"token": {
+			"stringKey": {
 				"val": "1q2w3e"
 			},
-			"longValue": {
+			"longKey": {
 				"type": "Long",
 				"val": "1212321312313"
 			},
-			"cachedb": {
-				"val": "default"
-			},
-			"login.method.token": {
+			"boolKey": {
 				"type": "Boolean",
 				"val": "true"
 			},
@@ -42,7 +50,7 @@ func TestClientGet(t *testing.T) {
 				"type": "Integer",
 				"val": "111"
 			},
-			"test": {
+			"fileRefKey": {
 				"type": "FileRef",
 				"val": "test"
 			}
@@ -53,12 +61,30 @@ func TestClientGet(t *testing.T) {
 
 	assert.Nil(t, json.Unmarshal(sample, &cfg))
 
-	t.Log(cfg.Account)
-
-	assert.NotNil(t, cfg.GetProperty("login.method.token"))
+	assert.EqualValues(t, "vpol", cfg.Account)
 
 	{
-		val, err := cfg.GetProperty("login.method.token").Boolean()
+		_, err := cfg.GetProperty("unknownKey").String()
+		assert.NotNil(t, err)
+	}
+
+	{
+		val, err := cfg.GetProperty("stringKey").String()
+		assert.Nil(t, err)
+		assert.EqualValues(t, "1q2w3e", val)
+	}
+
+	{
+		val, err := cfg.GetProperty("mapKey").StringMap()
+		assert.Nil(t, err)
+		assert.EqualValues(t, map[string]string{
+			"key1": "value1",
+			"key2": "value2",
+		}, val)
+	}
+
+	{
+		val, err := cfg.GetProperty("boolKey").Boolean()
 		assert.Nil(t, err)
 		assert.True(t, val)
 	}
@@ -70,8 +96,21 @@ func TestClientGet(t *testing.T) {
 	}
 
 	{
-		val, err := cfg.GetProperty("longValue").Long()
+		val, err := cfg.GetProperty("longKey").Long()
 		assert.Nil(t, err)
 		assert.EqualValues(t, 1212321312313, val)
+	}
+
+	{
+		val, err := cfg.GetProperty("intKey").Integer()
+		assert.Nil(t, err)
+		assert.EqualValues(t, 111, val)
+	}
+
+	{
+		val, err := cfg.GetProperty("fileRefKey").File()
+		assert.Nil(t, err)
+		assert.EqualValues(t, "adsfdfasadsfadfsdaf", val.Content)
+		assert.EqualValues(t, "text/plain", val.ContentType)
 	}
 }

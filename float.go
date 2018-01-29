@@ -34,13 +34,22 @@ func (b Float) Json() (map[string]interface{}, error) {
 	return nil, TypeValueErr
 }
 
+func (b Float) StringMap() (map[string]string, error) {
+	return nil, TypeValueErr
+}
+
 func (b Float) File() (*File, error) {
 	return nil, TypeValueErr
 }
 
-func (b *Float) Parse(value string) (err error) {
+func (b *Float) Parse(value interface{}) (err error) {
+	valS, ok := value.(string)
+	if !ok {
+		return WrongValueErr
+	}
+
 	var tVal float64
-	tVal, err = strconv.ParseFloat(value, 10)
+	tVal, err = strconv.ParseFloat(valS, 10)
 	if err != nil {
 		return
 	}

@@ -34,11 +34,22 @@ func (b Long) Json() (map[string]interface{}, error) {
 	return nil, TypeValueErr
 }
 
+func (b Long) StringMap() (map[string]string, error) {
+	return nil, TypeValueErr
+}
+
 func (b Long) File() (*File, error) {
 	return nil, TypeValueErr
 }
 
-func (b *Long) Parse(value string) (err error) {
-	b.Value, err = strconv.ParseInt(value, 10, 0)
+func (b *Long) Parse(value interface{}) (err error) {
+
+	valS, ok := value.(string)
+	if !ok {
+		return WrongValueErr
+	}
+
+
+	b.Value, err = strconv.ParseInt(valS, 10, 0)
 	return
 }

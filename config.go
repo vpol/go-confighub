@@ -47,7 +47,10 @@ func (c *ConfigHubClient) UnmarshalJSON(data []byte) (err error) {
 	}
 
 	if accI, ok := m["account"]; ok {
-		c.Account = string(accI)
+		err = json.Unmarshal(accI, &c.Account)
+		if err != nil {
+			return
+		}
 	}
 
 	if genI, ok := m["generated_on"]; ok {
@@ -59,11 +62,18 @@ func (c *ConfigHubClient) UnmarshalJSON(data []byte) (err error) {
 	}
 
 	if repoI, ok := m["repo"]; ok {
-		c.Repo = string(repoI)
+		err = json.Unmarshal(repoI, &c.Repo)
+		if err != nil {
+			return
+		}
 	}
 
 	if ctxI, ok := m["context"]; ok {
-		c.Context = string(ctxI)
+		err = json.Unmarshal(ctxI, &c.Context)
+		if err != nil {
+			return
+		}
+
 	}
 
 	c.Files = &Files{
@@ -137,7 +147,7 @@ func (c *ConfigHubClient) GetProperty(key string) (v Value) {
 		return p.value
 	}
 
-	return nil
+	return &NilValue{}
 }
 
 func (c *ConfigHubClient) GetFile(name string) (f *File) {
@@ -183,6 +193,16 @@ func (c *ConfigHubClient) AddWatch(key string, watch WatchFunc) {
 }
 
 type ConfigOption func(*ConfigOptions)
+
+func DefaultOptions() *ConfigOptions {
+	return &ConfigOptions{
+		Host: "127.0.0.1",
+		Port: 8080,
+		Token: "secret",
+		Repo: "default",
+		Context: "",
+	}
+}
 
 type ConfigOptions struct {
 	Host    string `json:"host"`

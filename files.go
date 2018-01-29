@@ -11,7 +11,7 @@ func (f *Files) UnmarshalJSON(data []byte) (err error) {
 
 	var m = make(map[string]struct {
 		Content     string `json:"content"`
-		ContentType string `json:"content_type"`
+		ContentType string `json:"content-type"`
 	})
 
 	err = json.Unmarshal(data, &m)
@@ -35,7 +35,7 @@ func (f *Files) UnmarshalJSON(data []byte) (err error) {
 
 type File struct {
 	Name        string
-	Content     string
-	ContentType string
+	Content     string `json:"content"`
+	ContentType string `json:"content-type"`
 }
 

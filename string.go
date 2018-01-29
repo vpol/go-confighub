@@ -28,6 +28,10 @@ func (b String) Double() (float64, error) {
 	return 0, TypeValueErr
 }
 
+func (b String) StringMap() (map[string]string, error) {
+	return nil, TypeValueErr
+}
+
 func (b String) Json() (map[string]interface{}, error) {
 	return nil, TypeValueErr
 }
@@ -36,7 +40,13 @@ func (b String) File() (*File, error) {
 	return nil, TypeValueErr
 }
 
-func (b *String) Parse(value string) (err error) {
-	b.Value = value
+func (b *String) Parse(value interface{}) (err error) {
+
+	valS, ok := value.(string)
+	if !ok {
+		return WrongValueErr
+	}
+
+	b.Value = valS
 	return
 }

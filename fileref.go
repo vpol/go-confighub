@@ -35,10 +35,20 @@ func (b FileRef) File() (*File, error) {
 	return b.Value, nil
 }
 
-func (b *FileRef) Parse(value string) (err error) {
+func (b FileRef) StringMap() (map[string]string, error) {
+	return nil, TypeValueErr
+}
+
+
+func (b *FileRef) Parse(value interface{}) (err error) {
+
+	valS, ok := value.(string)
+	if !ok {
+		return WrongValueErr
+	}
 
 	if b.files != nil {
-		if f, ok := b.files.entries[value]; ok {
+		if f, ok := b.files.entries[valS]; ok {
 			b.Value = f
 			return
 		}

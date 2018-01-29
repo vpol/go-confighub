@@ -26,8 +26,13 @@ func (b Json) Long() (int64, error) {
 func (b Json) Float() (float32, error) {
 	return 0, TypeValueErr
 }
+
 func (b Json) Double() (float64, error) {
 	return 0, TypeValueErr
+}
+
+func (b Json) StringMap() (map[string]string, error) {
+	return nil, TypeValueErr
 }
 
 func (b Json) Json() (map[string]interface{}, error) {
@@ -41,7 +46,13 @@ func (b Json) File() (*File, error) {
 	return nil, TypeValueErr
 }
 
-func (b *Json) Parse(value string) (err error) {
-	err = json.Unmarshal([]byte(value), &b.Value)
+func (b *Json) Parse(value interface{}) (err error) {
+
+	valS, ok := value.(string)
+	if !ok {
+		return WrongValueErr
+	}
+
+	err = json.Unmarshal([]byte(valS), &b.Value)
 	return
 }
